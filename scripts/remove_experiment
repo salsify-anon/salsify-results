@@ -1,0 +1,30 @@
+#!/bin/bash -e
+
+if [[ -z $1 ]]; then
+    echo "usage: $0 EXPERIMENT_DIR_TO_REMOVE"
+    exit -1
+fi
+
+readonly SCRIPT_FILEPATH=$(readlink -m ${BASH_SOURCE[0]})
+readonly SCRIPT_DIRPATH=$(dirname $SCRIPT_FILEPATH)
+source $SCRIPT_DIRPATH/experiment_common.sh
+
+remove_experiment_set_variables $1
+
+echo "making backup"
+mkdir -p /video-drive1/.backup/autobackup/
+cp -rl $EXTERNAL_DRIVE /video-drive1/.backup/autobackup/$(date +%Y-%m-%d:%H:%M:%S)
+
+mkdir -p /.backup/autobackup/
+cp -rl $SCRIPT_DIRPATH/../../salsify-results /.backup/autobackup/$(date +%Y-%m-%d:%H:%M:%S)
+
+echo "removing: " $EXTERNAL_DRIVE/$RESULTS_DIR
+if [[ $(readlink -e $EXTERNAL_DRIVE/$RESULTS_DIR) != /video-drive1/salsify-results ]]; then
+    rm -r $EXTERNAL_DRIVE/$RESULTS_DIR
+else
+    echo "ERROR: trying to remove the entire results dir. This is probably as bug..."
+    exit -1
+fi
+
+echo "removing: " $EXPERIMENT_DIR
+rm -r $EXPERIMENT_DIR

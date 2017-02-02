@@ -1,0 +1,13 @@
+@-moz-document domain("hangouts.google.com") {
+div.Wa {
+  display: none;
+}
+
+div.ma {
+  display: none;
+}
+
+div.RHTOSb {
+  display: none;
+}
+}
